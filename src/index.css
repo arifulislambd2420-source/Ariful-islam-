@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg text-ink font-body antialiased;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+  ::selection {
+    background: #2563EB;
+    color: #FFFFFF;
+  }
+  :focus-visible {
+    outline: 2px solid #2563EB;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary;
+  }
+  .eyebrow-on-navy {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-cyan;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition;
+  }
+  .btn-primary {
+    @apply btn text-white shadow-glow;
+    background-image: linear-gradient(135deg, #2563eb 0%, #22d3ee 100%);
+  }
+  .btn-primary:hover {
+    background-image: linear-gradient(135deg, #1d4ed8 0%, #06b6d4 100%);
+  }
+  .btn-outline {
+    @apply btn border border-border bg-white text-ink hover:border-primary hover:text-primary;
+  }
+  .btn-outline-on-navy {
+    @apply btn border border-white/20 bg-transparent text-on-navy hover:border-cyan hover:text-cyan;
+  }
+  .btn-wa {
+    @apply btn bg-[#25D366] text-white hover:brightness-110;
+  }
+
+  /* Cards */
+  .card {
+    @apply rounded-2xl border border-border bg-white shadow-card transition;
+  }
+  .card-hover {
+    @apply hover:-translate-y-1 hover:shadow-card-hover hover:border-primary/30;
+  }
+
+  /* Form fields */
+  .field {
+    @apply w-full rounded-lg border border-border bg-white px-4 py-3 text-[15px] text-ink placeholder:text-muted/70 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10;
+  }
+  .label {
+    @apply mb-1.5 block text-[13px] font-medium text-ink;
+  }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Utility: gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

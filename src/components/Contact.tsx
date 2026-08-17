@@ -1,0 +1,327 @@
+import { useState, FormEvent } from "react";
+import { Facebook, Instagram, Linkedin, Mail, MessageCircle, Youtube } from "lucide-react";
+import SectionHeader from "./SectionHeader";
+
+type FormState = {
+  name: string;
+  email: string;
+  phone: string;
+  company: string;
+  service: string;
+  budget: string;
+  timeline: string;
+  message: string;
+};
+
+const initial: FormState = {
+  name: "",
+  email: "",
+  phone: "",
+  company: "",
+  service: "",
+  budget: "",
+  timeline: "",
+  message: "",
+};
+
+const SERVICES = [
+  "Social Media Marketing",
+  "Facebook Ads",
+  "Google Ads (PPC)",
+  "SEO Optimization",
+  "WordPress Design",
+  "Email Marketing",
+  "Content Marketing",
+  "Lead Generation",
+  "অন্যান্য",
+];
+
+const BUDGETS = [
+  "৳১০,০০০ এর কম",
+  "৳১০,০০০ – ৳৩০,০০০",
+  "৳৩০,০০০ – ৳৬০,০০০",
+  "৳৬০,০০০ – ৳১,০০,০০০",
+  "৳১,০০,০০০+",
+];
+
+const TIMELINES = ["এখনই শুরু", "১-২ সপ্তাহের মধ্যে", "১ মাসের মধ্যে", "শুধু আলাপ / পরামর্শ"];
+
+export default function Contact() {
+  const [form, setForm] = useState<FormState>(initial);
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [sent, setSent] = useState(false);
+
+  function update<K extends keyof FormState>(k: K, v: FormState[K]) {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors((e) => ({ ...e, [k]: undefined }));
+  }
+
+  function validate(f: FormState) {
+    const e: Partial<Record<keyof FormState, string>> = {};
+    if (!f.name.trim()) e.name = "নাম দিন";
+    if (!f.email.trim()) e.email = "ইমেইল দিন";
+    else if (!/^\S+@\S+\.\S+$/.test(f.email)) e.email = "সঠিক ইমেইল দিন";
+    if (!f.message.trim()) e.message = "প্রজেক্ট সম্পর্কে সংক্ষেপে লিখুন";
+    return e;
+  }
+
+  function onSubmit(ev: FormEvent) {
+    ev.preventDefault();
+    const e = validate(form);
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    setSent(true);
+  }
+
+  return (
+    <section id="contact" className="border-t border-hairline bg-panel/30 py-24 sm:py-32">
+      <div className="container-x">
+        <SectionHeader
+          entry="এন্ট্রি ০৬ · যোগাযোগ"
+          title="চলুন কাজ শুরু করি।"
+          intro="একটা সংক্ষিপ্ত ব্রিফ দিন — ২৪ ঘণ্টার মধ্যে ফিরে আসছি WhatsApp বা ইমেইলে।"
+        />
+
+        <div className="grid gap-10 lg:grid-cols-12">
+          {/* Left — quick contact */}
+          <aside className="reveal space-y-6 lg:col-span-4">
+            <a
+              href="https://wa.me/8801874783819"
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-start gap-4 rounded-lg border border-hairline bg-panel/60 p-5 transition-colors hover:border-accent/40"
+            >
+              <MessageCircle size={22} className="mt-0.5 text-accent" />
+              <div>
+                <div className="eyebrow">WhatsApp</div>
+                <div className="mt-1 font-display text-lg font-semibold group-hover:text-accent">
+                  01874783819
+                </div>
+              </div>
+            </a>
+
+            <a
+              href="mailto:ariful68173@gmail.com"
+              className="group flex items-start gap-4 rounded-lg border border-hairline bg-panel/60 p-5 transition-colors hover:border-accent/40"
+            >
+              <Mail size={22} className="mt-0.5 text-accent" />
+              <div>
+                <div className="eyebrow">Email</div>
+                <div className="mt-1 font-display text-lg font-semibold group-hover:text-accent">
+                  ariful68173@gmail.com
+                </div>
+              </div>
+            </a>
+
+            <div className="rounded-lg border border-hairline bg-panel/60 p-5">
+              <div className="eyebrow">সোশ্যাল</div>
+              <div className="mt-4 flex items-center gap-3">
+                {[
+                  { icon: Facebook, href: "#", label: "Facebook" },
+                  { icon: Instagram, href: "#", label: "Instagram" },
+                  { icon: Linkedin, href: "#", label: "LinkedIn" },
+                  { icon: Youtube, href: "#", label: "YouTube" },
+                ].map(({ icon: Icon, href, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    className="grid h-10 w-10 place-items-center rounded-md border border-hairline text-muted transition hover:border-accent hover:text-accent"
+                  >
+                    <Icon size={16} />
+                  </a>
+                ))}
+              </div>
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-widest2 text-muted/70">
+                [ সোশ্যাল লিংক পরে যোগ হবে ]
+              </p>
+            </div>
+          </aside>
+
+          {/* Right — form */}
+          <form
+            noValidate
+            onSubmit={onSubmit}
+            className="reveal rounded-lg border border-hairline bg-panel/40 p-6 sm:p-8 lg:col-span-8"
+          >
+            {sent ? (
+              <div className="py-16 text-center">
+                <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-accent/15 text-accent">
+                  ✓
+                </div>
+                <h3 className="font-display text-2xl font-semibold">ধন্যবাদ!</h3>
+                <p className="mt-2 text-muted">
+                  আপনার বার্তা পেয়েছি। ২৪ ঘণ্টার মধ্যে যোগাযোগ করবো।
+                </p>
+                <p className="mt-2 font-mono text-[11px] uppercase tracking-widest2 text-muted/70">
+                  [ ফ্রন্টএন্ড validation — backend পরে যোগ হবে ]
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm(initial);
+                    setSent(false);
+                  }}
+                  className="mt-6 btn-ghost"
+                >
+                  আরেকটা বার্তা পাঠান
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label className="label-mono" htmlFor="name">
+                      নাম *
+                    </label>
+                    <input
+                      id="name"
+                      className="field"
+                      value={form.name}
+                      onChange={(e) => update("name", e.target.value)}
+                      placeholder="আপনার পুরো নাম"
+                    />
+                    {errors.name && (
+                      <p className="mt-1 text-xs text-gold">{errors.name}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="label-mono" htmlFor="email">
+                      ইমেইল *
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      className="field"
+                      value={form.email}
+                      onChange={(e) => update("email", e.target.value)}
+                      placeholder="you@example.com"
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-xs text-gold">{errors.email}</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="label-mono" htmlFor="phone">
+                      ফোন / WhatsApp
+                    </label>
+                    <input
+                      id="phone"
+                      className="field"
+                      value={form.phone}
+                      onChange={(e) => update("phone", e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                    />
+                  </div>
+                  <div>
+                    <label className="label-mono" htmlFor="company">
+                      কোম্পানি / ব্র্যান্ড
+                    </label>
+                    <input
+                      id="company"
+                      className="field"
+                      value={form.company}
+                      onChange={(e) => update("company", e.target.value)}
+                      placeholder="যদি থাকে"
+                    />
+                  </div>
+                  <div>
+                    <label className="label-mono" htmlFor="service">
+                      সার্ভিস
+                    </label>
+                    <select
+                      id="service"
+                      className="field"
+                      value={form.service}
+                      onChange={(e) => update("service", e.target.value)}
+                    >
+                      <option value="">সার্ভিস নির্বাচন</option>
+                      {SERVICES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label-mono" htmlFor="budget">
+                      মাসিক বাজেট
+                    </label>
+                    <select
+                      id="budget"
+                      className="field"
+                      value={form.budget}
+                      onChange={(e) => update("budget", e.target.value)}
+                    >
+                      <option value="">বাজেট নির্বাচন</option>
+                      {BUDGETS.map((b) => (
+                        <option key={b} value={b}>
+                          {b}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="label-mono" htmlFor="timeline">
+                      টাইমলাইন
+                    </label>
+                    <select
+                      id="timeline"
+                      className="field"
+                      value={form.timeline}
+                      onChange={(e) => update("timeline", e.target.value)}
+                    >
+                      <option value="">কখন শুরু করতে চান</option>
+                      {TIMELINES.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="label-mono" htmlFor="message">
+                      প্রজেক্ট বিবরণ *
+                    </label>
+                    <textarea
+                      id="message"
+                      className="field min-h-[140px] resize-y"
+                      value={form.message}
+                      onChange={(e) => update("message", e.target.value)}
+                      placeholder="আপনার ব্র্যান্ড, লক্ষ্য ও চ্যালেঞ্জ সংক্ষেপে লিখুন..."
+                    />
+                    {errors.message && (
+                      <p className="mt-1 text-xs text-gold">{errors.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <button type="submit" className="btn-primary">
+                    বার্তা পাঠান
+                  </button>
+                  <a
+                    href="https://wa.me/8801874783819"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-wa"
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </a>
+                  <a href="mailto:ariful68173@gmail.com" className="btn-ghost">
+                    <Mail size={16} />
+                    Email
+                  </a>
+                </div>
+                <p className="mt-4 font-mono text-[11px] uppercase tracking-widest2 text-muted/70">
+                  [ এই ফর্ম এখন শুধু frontend validation করে — backend পরে যোগ হবে ]
+                </p>
+              </>
+            )}
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
