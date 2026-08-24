@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
   { href: "#home", label: "হোম" },
@@ -47,19 +48,23 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle />
           <a href="#contact" className="btn-primary">
             হায়ার করুন
           </a>
         </div>
 
-        <button
-          className="grid h-10 w-10 place-items-center rounded-md border border-hairline md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            className="grid h-10 w-10 place-items-center rounded-full border border-border text-ink"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </nav>
 
       {open && (

@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------- Palette tokens (swap on data-theme) ---------- */
+:root,
+:root[data-theme="light"] {
+  --c-bg: 255 255 255;        /* #FFFFFF */
+  --c-surface: 245 247 251;   /* #F5F7FB */
+  --c-ink: 11 21 38;          /* #0B1526 */
+  --c-muted: 91 107 130;      /* #5B6B82 */
+  --c-border: 229 234 242;    /* #E5EAF2 */
+
+  --card-bg: 255 255 255;
+  --focus-ring: 37 99 235 / 0.15;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --c-bg: 11 18 32;           /* #0B1220 */
+  --c-surface: 17 24 39;      /* #111827 */
+  --c-ink: 226 232 240;       /* #E2E8F0 */
+  --c-muted: 148 163 184;     /* #94A3B8 */
+  --c-border: 30 41 59;       /* #1E293B */
+
+  --card-bg: 17 24 39;
+  --focus-ring: 34 211 238 / 0.25;
+  color-scheme: dark;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -9,6 +35,7 @@
   body {
     @apply bg-bg text-ink font-body antialiased;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 200ms ease, color 200ms ease;
   }
   h1, h2, h3, h4 {
     @apply font-display;
@@ -47,7 +74,7 @@
     background-image: linear-gradient(135deg, #1d4ed8 0%, #06b6d4 100%);
   }
   .btn-outline {
-    @apply btn border border-border bg-white text-ink hover:border-primary hover:text-primary;
+    @apply btn border border-border bg-bg text-ink hover:border-primary hover:text-primary;
   }
   .btn-outline-on-navy {
     @apply btn border border-white/20 bg-transparent text-on-navy hover:border-cyan hover:text-cyan;
@@ -58,7 +85,7 @@
 
   /* Cards */
   .card {
-    @apply rounded-2xl border border-border bg-white shadow-card transition;
+    @apply rounded-2xl border border-border bg-bg shadow-card transition;
   }
   .card-hover {
     @apply hover:-translate-y-1 hover:shadow-card-hover hover:border-primary/30;
@@ -66,7 +93,7 @@
 
   /* Form fields */
   .field {
-    @apply w-full rounded-lg border border-border bg-white px-4 py-3 text-[15px] text-ink placeholder:text-muted/70 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10;
+    @apply w-full rounded-lg border border-border bg-bg px-4 py-3 text-[15px] text-ink placeholder:text-muted/70 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10;
   }
   .label {
     @apply mb-1.5 block text-[13px] font-medium text-ink;

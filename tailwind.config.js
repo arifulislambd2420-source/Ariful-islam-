@@ -1,24 +1,25 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  darkMode: ['selector', '[data-theme="dark"]'],
   theme: {
     extend: {
       colors: {
-        // Base
-        bg: "#FFFFFF",
-        surface: "#F5F7FB",       // section alt bg
-        ink: "#0B1526",           // primary heading / text
-        muted: "#5B6B82",         // secondary text
-        border: "#E5EAF2",        // hairline / card borders
+        // Palette that swaps with light/dark mode (driven by CSS vars in index.css)
+        bg: "rgb(var(--c-bg) / <alpha-value>)",
+        surface: "rgb(var(--c-surface) / <alpha-value>)",
+        ink: "rgb(var(--c-ink) / <alpha-value>)",
+        muted: "rgb(var(--c-muted) / <alpha-value>)",
+        border: "rgb(var(--c-border) / <alpha-value>)",
 
-        // Brand
-        navy: "#0F1E3D",          // deep navy — hero, footer, dark panels
-        primary: "#2563EB",       // accent blue — links, CTAs
-        cyan: "#22D3EE",          // accent cyan — gradient partner, hover glow
+        // Brand colors — same in both modes
+        navy: "#0F1E3D",
+        primary: "#2563EB",
+        cyan: "#22D3EE",
 
-        // Utility surfaces on dark
-        "navy-2": "#152A55",      // slightly lighter navy for panels-on-navy
-        "on-navy": "#E6ECF7",     // body text on navy
+        // Dark-panel helpers (used on navy hero/footer regardless of mode)
+        "navy-2": "#152A55",
+        "on-navy": "#E6ECF7",
         "on-navy-muted": "#93A3C4",
       },
       fontFamily: {
