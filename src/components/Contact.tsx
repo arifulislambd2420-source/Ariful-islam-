@@ -5,21 +5,31 @@ import {
   Facebook,
   Instagram,
   Linkedin,
+  Loader2,
   Mail,
   MapPin,
   MessageCircle,
   Send,
   Sparkles,
+  XCircle,
   Youtube,
 } from "lucide-react";
 import { useSite } from "../context/SiteContext";
 import { EditableText } from "./admin/EditableText";
+
+// ─── Formspree endpoint ─────────────────────────────────────────────
+// TODO: Replace YOUR_FORM_ID with the real Formspree form ID after
+// creating a form at https://formspree.io — no other code change needed.
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+// ─────────────────────────────────────────────────────────────────────
 
 type FormState = {
   name: string;
   email: string;
   message: string;
 };
+
+type SubmitStatus = "idle" | "loading" | "success" | "error";
 
 const initial: FormState = { name: "", email: "", message: "" };
 const errClass = "mt-1.5 text-xs font-medium text-red-400";
@@ -31,11 +41,17 @@ export default function Contact() {
 
   const [form, setForm] = useState<FormState>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const sent = status === "success";
 
   function update<K extends keyof FormState>(k: K, v: FormState[K]) {
     setForm((f) => ({ ...f, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: undefined }));
+    if (status === "error") {
+      setStatus("idle");
+      setErrorMsg("");
+    }
   }
 
   function validate(f: FormState) {
@@ -47,13 +63,57 @@ export default function Contact() {
     return e;
   }
 
-  function onSubmit(ev: FormEvent) {
+  async function onSubmit(ev: FormEvent) {
     ev.preventDefault();
     const e = validate(form);
     setErrors(e);
     if (Object.keys(e).length) return;
-    setSent(true);
+
+    setStatus("loading");
+    setErrorMsg("");
+
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          _subject: `নতুন লিড: ${form.name}`,
+        }),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        return;
+      }
+
+      // Formspree returns JSON with `errors` array on validation failure
+      let msg = "বার্তা পাঠানো যায়নি — আবার চেষ্টা করুন।";
+      try {
+        const body = await res.json();
+        if (body?.errors?.length) {
+          msg = body.errors.map((x: { message?: string }) => x.message).filter(Boolean).join(" · ") || msg;
+        }
+      } catch {
+        /* non-JSON response */
+      }
+      setStatus("error");
+      setErrorMsg(msg);
+    } catch (err) {
+      setStatus("error");
+      setErrorMsg(
+        "নেটওয়ার্ক এরর — ইন্টারনেট কানেকশন চেক করে আবার চেষ্টা করুন।"
+      );
+    }
   }
+
+  const isLoading = status === "loading";
+  const hasError = status === "error";
 
   return (
     <section
@@ -119,14 +179,12 @@ export default function Contact() {
                 <p className="mx-auto mt-2 max-w-sm text-on-navy-muted">
                   আপনার বার্তা পেয়েছি। ২৪ ঘণ্টার মধ্যে যোগাযোগ করবো।
                 </p>
-                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.18em] text-on-navy-muted/70">
-                  [ ফ্রন্টএন্ড validation — backend পরে যোগ হবে ]
-                </p>
                 <button
                   type="button"
                   onClick={() => {
                     setForm(initial);
-                    setSent(false);
+                    setStatus("idle");
+                    setErrorMsg("");
                   }}
                   className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:border-cyan hover:bg-cyan/10 hover:text-cyan"
                 >
@@ -150,7 +208,8 @@ export default function Contact() {
                       value={form.name}
                       onChange={(e) => update("name", e.target.value)}
                       placeholder="আপনার পুরো নাম"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20"
+                      disabled={isLoading}
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20 disabled:opacity-50"
                     />
                     {errors.name && <p className={errClass}>{errors.name}</p>}
                   </div>
@@ -169,7 +228,8 @@ export default function Contact() {
                       value={form.email}
                       onChange={(e) => update("email", e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20"
+                      disabled={isLoading}
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20 disabled:opacity-50"
                     />
                     {errors.email && <p className={errClass}>{errors.email}</p>}
                   </div>
@@ -187,19 +247,54 @@ export default function Contact() {
                       value={form.message}
                       onChange={(e) => update("message", e.target.value)}
                       placeholder="আপনার ব্র্যান্ড, লক্ষ্য ও চ্যালেঞ্জ সংক্ষেপে লিখুন..."
-                      className="min-h-[160px] w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20"
+                      disabled={isLoading}
+                      className="min-h-[160px] w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20 disabled:opacity-50"
                     />
                     {errors.message && <p className={errClass}>{errors.message}</p>}
                   </div>
                 </div>
 
+                {/* Error banner */}
+                {hasError && (
+                  <div
+                    role="alert"
+                    className="mt-5 flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 backdrop-blur"
+                  >
+                    <XCircle
+                      size={18}
+                      className="mt-0.5 flex-shrink-0 text-red-400"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[13px] font-semibold text-red-400">
+                        পাঠানো যায়নি
+                      </div>
+                      <p className="mt-0.5 text-[13px] text-on-navy-muted">
+                        {errorMsg}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-7 flex flex-wrap items-center gap-3">
-                  <button type="submit" className="btn-primary">
-                    <Send size={16} />
-                    বার্তা পাঠান
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn-primary disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        পাঠানো হচ্ছে...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={16} />
+                        বার্তা পাঠান
+                      </>
+                    )}
                   </button>
                   <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-on-navy-muted/70">
-                    [ frontend validation — backend পরে ]
+                    Powered by Formspree
                   </p>
                 </div>
               </>
