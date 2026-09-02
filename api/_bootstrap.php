@@ -64,3 +64,80 @@ function require_method(string $method): void
         );
     }
 }
+
+/**
+ * Read the Bearer token from the Authorization header, tolerating the
+ * various forms Apache / FastCGI expose it under.
+ */
+function read_bearer_token(): ?string
+{
+    $candidates = [
+        $_SERVER['HTTP_AUTHORIZATION']          ?? null,
+        $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null,
+    ];
+
+    if (function_exists('getallheaders')) {
+        $headers = getallheaders();
+        if (is_array($headers)) {
+            foreach ($headers as $k => $v) {
+                if (strcasecmp($k, 'Authorization') === 0) {
+                    $candidates[] = $v;
+                }
+            }
+        }
+    }
+
+    foreach ($candidates as $raw) {
+        if (!is_string($raw) || $raw === '') continue;
+        if (preg_match('/^Bearer\s+([A-Za-z0-9._~\-]+)$/i', trim($raw), $m)) {
+            return $m[1];
+        }
+    }
+    return null;
+}
+
+/**
+ * Require a valid, unexpired session token on the incoming request.
+ * On success returns the row: ['id' => int, 'name' => string, 'email' => string].
+ * On failure emits 401 and terminates — never returns.
+ */
+function require_auth(): array
+{
+    $token = read_bearer_token();
+    if ($token === null || strlen($token) !== 64) {
+        json_response(
+            ['success' => false, 'message' => 'অনুমোদিত নন। সঠিক টোকেন দিন।'],
+            401
+        );
+    }
+
+    try {
+        $stmt = db()->prepare(
+            'SELECT u.id, u.name, u.email
+             FROM sessions s
+             JOIN users u ON u.id = s.user_id
+             WHERE s.token = ? AND s.expires_at > NOW()
+             LIMIT 1'
+        );
+        $stmt->execute([$token]);
+        $row = $stmt->fetch();
+    } catch (PDOException $e) {
+        json_response(
+            ['success' => false, 'message' => 'ডাটাবেস এরর।'],
+            500
+        );
+    }
+
+    if (!$row) {
+        json_response(
+            ['success' => false, 'message' => 'টোকেন অবৈধ বা মেয়াদ শেষ।'],
+            401
+        );
+    }
+
+    return [
+        'id'    => (int) $row['id'],
+        'name'  => (string) $row['name'],
+        'email' => (string) $row['email'],
+    ];
+}

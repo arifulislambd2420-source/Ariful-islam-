@@ -5,11 +5,12 @@
  * Response:    { success: true, token: "…", name: "…" }
  *              { success: false, message: "…" }
  *
- * NOTE: token is generated with random_bytes(32) but NOT persisted server-side
- * yet (no sessions table exists). It's fine for the frontend to store it in
- * localStorage as a login flag, but any future endpoint that needs to *verify*
- * a token will require a `sessions` table + a lookup step.
+ * The issued token is a 64-char hex string persisted in the `sessions` table
+ * with a 7-day expiry, so protected endpoints can validate it via
+ * require_auth() from _bootstrap.php.
  */
+
+const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
 declare(strict_types=1);
 
@@ -59,13 +60,28 @@ if (!$user || !password_verify($password, $user['password_hash'])) {
     ], 401);
 }
 
-// ─── Issue session token ────────────────────────────────────────────
+// ─── Issue session token + persist ──────────────────────────────────
 try {
-    $token = bin2hex(random_bytes(32));
+    $token     = bin2hex(random_bytes(32));
+    $expiresAt = (new DateTimeImmutable('now', new DateTimeZone('UTC')))
+        ->modify('+' . SESSION_TTL_SECONDS . ' seconds')
+        ->format('Y-m-d H:i:s');
 } catch (Exception $e) {
     json_response([
         'success' => false,
         'message' => 'টোকেন তৈরি করা যায়নি।',
+    ], 500);
+}
+
+try {
+    $stmt = $pdo->prepare(
+        'INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)'
+    );
+    $stmt->execute([$token, (int) $user['id'], $expiresAt]);
+} catch (PDOException $e) {
+    json_response([
+        'success' => false,
+        'message' => 'সেশন সেভ করা যায়নি।',
     ], 500);
 }
 
