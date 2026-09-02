@@ -1,59 +1,34 @@
 import { useState, FormEvent } from "react";
-import { Facebook, Instagram, Linkedin, Mail, MessageCircle, Youtube } from "lucide-react";
-import SectionHeader from "./SectionHeader";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Send,
+  Sparkles,
+  Youtube,
+} from "lucide-react";
 import { useSite } from "../context/SiteContext";
 import { EditableText } from "./admin/EditableText";
 
 type FormState = {
   name: string;
   email: string;
-  phone: string;
-  company: string;
-  service: string;
-  budget: string;
-  timeline: string;
   message: string;
 };
 
-const initial: FormState = {
-  name: "",
-  email: "",
-  phone: "",
-  company: "",
-  service: "",
-  budget: "",
-  timeline: "",
-  message: "",
-};
-
-const SERVICES = [
-  "Social Media Marketing",
-  "Facebook Ads",
-  "Google Ads (PPC)",
-  "SEO Optimization",
-  "WordPress Design",
-  "Email Marketing",
-  "Content Marketing",
-  "Lead Generation",
-  "অন্যান্য",
-];
-
-const BUDGETS = [
-  "৳১০,০০০ এর কম",
-  "৳১০,০০০ – ৳৩০,০০০",
-  "৳৩০,০০০ – ৳৬০,০০০",
-  "৳৬০,০০০ – ৳১,০০,০০০",
-  "৳১,০০,০০০+",
-];
-
-const TIMELINES = ["এখনই শুরু", "১-২ সপ্তাহের মধ্যে", "১ মাসের মধ্যে", "শুধু আলাপ / পরামর্শ"];
-
-const errClass = "mt-1 text-xs text-red-500";
+const initial: FormState = { name: "", email: "", message: "" };
+const errClass = "mt-1.5 text-xs font-medium text-red-400";
 
 export default function Contact() {
   const { data, setNestedField } = useSite();
   const c = data.contact;
   const waNumber = (c.whatsapp || "").replace(/\D/g, "");
+
   const [form, setForm] = useState<FormState>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [sent, setSent] = useState(false);
@@ -81,54 +56,260 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="border-t border-border bg-surface py-24 sm:py-32">
-      <div className="container-x">
-        <SectionHeader
-          entry="এন্ট্রি ০৬ · যোগাযোগ"
-          title="চলুন কাজ শুরু করি।"
-          intro={c.formIntro}
-        />
+    <section
+      id="contact"
+      className="relative overflow-hidden py-24 text-on-navy sm:py-28"
+      style={{
+        background:
+          "linear-gradient(180deg, #0a0e1a 0%, #0f1730 50%, #131c2e 100%)",
+      }}
+    >
+      {/* soft accent glows */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-20 h-[440px] w-[440px] rounded-full bg-primary opacity-15 blur-[140px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-32 bottom-20 h-[380px] w-[380px] rounded-full bg-cyan opacity-15 blur-[120px]"
+      />
 
-        <div className="grid gap-10 lg:grid-cols-12">
-          {/* Left — quick contact */}
-          <aside className="reveal space-y-6 lg:col-span-4">
-            <a
-              href={`https://wa.me/88${waNumber}`}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex items-start gap-4 rounded-2xl border border-border bg-bg p-5 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover"
-            >
-              <MessageCircle size={22} className="mt-0.5 text-primary" />
-              <div>
-                <div className="eyebrow">WhatsApp</div>
-                <EditableText
-                  as="div"
-                  className="mt-1 font-display text-lg font-semibold text-ink group-hover:text-primary"
-                  value={c.whatsapp}
-                  onChange={(v) => setNestedField("contact.whatsapp", v)}
-                />
+      <div className="container-x relative">
+        {/* Header */}
+        <div className="reveal mx-auto mb-14 max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan/30 bg-cyan/10 px-4 py-1.5 backdrop-blur">
+            <Sparkles size={13} className="text-cyan" />
+            <span className="text-[12px] font-semibold uppercase tracking-[0.16em] text-cyan">
+              এন্ট্রি ০৬ · যোগাযোগ
+            </span>
+          </div>
+          <h2 className="mt-5 font-display text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl">
+            চলুন কাজ <span className="text-gradient">শুরু</span> করি।
+          </h2>
+          <EditableText
+            as="p"
+            className="mx-auto mt-4 block max-w-xl text-on-navy-muted"
+            value={c.formIntro}
+            onChange={(v) => setNestedField("contact.formIntro", v)}
+            multiline
+          />
+        </div>
+
+        <div className="reveal grid gap-6 lg:grid-cols-12">
+          {/* ─── LEFT: Form ─── */}
+          <form
+            noValidate
+            onSubmit={onSubmit}
+            className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8 lg:col-span-7"
+          >
+            {sent ? (
+              <div className="py-16 text-center">
+                <div
+                  className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-full text-white shadow-glow"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #2563EB 0%, #22D3EE 100%)",
+                  }}
+                >
+                  <CheckCircle2 size={26} />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-white">
+                  ধন্যবাদ!
+                </h3>
+                <p className="mx-auto mt-2 max-w-sm text-on-navy-muted">
+                  আপনার বার্তা পেয়েছি। ২৪ ঘণ্টার মধ্যে যোগাযোগ করবো।
+                </p>
+                <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.18em] text-on-navy-muted/70">
+                  [ ফ্রন্টএন্ড validation — backend পরে যোগ হবে ]
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForm(initial);
+                    setSent(false);
+                  }}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:border-cyan hover:bg-cyan/10 hover:text-cyan"
+                >
+                  আরেকটা বার্তা পাঠান
+                  <ArrowRight size={16} />
+                </button>
               </div>
-            </a>
+            ) : (
+              <>
+                <div className="space-y-5">
+                  {/* Name */}
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.14em] text-on-navy-muted"
+                    >
+                      নাম *
+                    </label>
+                    <input
+                      id="name"
+                      value={form.name}
+                      onChange={(e) => update("name", e.target.value)}
+                      placeholder="আপনার পুরো নাম"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20"
+                    />
+                    {errors.name && <p className={errClass}>{errors.name}</p>}
+                  </div>
 
-            <a
-              href={`mailto:${c.email}`}
-              className="group flex items-start gap-4 rounded-2xl border border-border bg-bg p-5 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover"
-            >
-              <Mail size={22} className="mt-0.5 text-primary" />
-              <div>
-                <div className="eyebrow">Email</div>
-                <EditableText
-                  as="div"
-                  className="mt-1 font-display text-lg font-semibold text-ink group-hover:text-primary"
-                  value={c.email}
-                  onChange={(v) => setNestedField("contact.email", v)}
-                />
+                  {/* Email */}
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.14em] text-on-navy-muted"
+                    >
+                      ইমেইল *
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => update("email", e.target.value)}
+                      placeholder="you@example.com"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20"
+                    />
+                    {errors.email && <p className={errClass}>{errors.email}</p>}
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.14em] text-on-navy-muted"
+                    >
+                      প্রজেক্ট বিবরণ *
+                    </label>
+                    <textarea
+                      id="message"
+                      value={form.message}
+                      onChange={(e) => update("message", e.target.value)}
+                      placeholder="আপনার ব্র্যান্ড, লক্ষ্য ও চ্যালেঞ্জ সংক্ষেপে লিখুন..."
+                      className="min-h-[160px] w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-[15px] text-white placeholder:text-on-navy-muted/60 backdrop-blur transition focus:border-cyan focus:outline-none focus:ring-4 focus:ring-cyan/20"
+                    />
+                    {errors.message && <p className={errClass}>{errors.message}</p>}
+                  </div>
+                </div>
+
+                <div className="mt-7 flex flex-wrap items-center gap-3">
+                  <button type="submit" className="btn-primary">
+                    <Send size={16} />
+                    বার্তা পাঠান
+                  </button>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-on-navy-muted/70">
+                    [ frontend validation — backend পরে ]
+                  </p>
+                </div>
+              </>
+            )}
+          </form>
+
+          {/* ─── RIGHT: Info card ─── */}
+          <aside className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-7 lg:col-span-5">
+            {/* subtle glow */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary opacity-30 blur-3xl"
+            />
+
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" />
+                </span>
+                Available for new projects
               </div>
-            </a>
+              <h3 className="mt-4 font-display text-xl font-bold text-white">
+                সরাসরি যোগাযোগ
+              </h3>
+              <p className="mt-1 text-sm text-on-navy-muted">
+                দ্রুততম রেসপন্স — সাধারণত ২৪ ঘণ্টার মধ্যে।
+              </p>
+            </div>
 
-            <div className="rounded-2xl border border-border bg-bg p-5 shadow-card">
-              <div className="eyebrow">সোশ্যাল</div>
-              <div className="mt-4 flex items-center gap-3">
+            {/* Contact rows */}
+            <div className="relative mt-6 space-y-3">
+              {/* WhatsApp */}
+              <a
+                href={`https://wa.me/88${waNumber}`}
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3.5 transition hover:-translate-y-0.5 hover:border-cyan/40 hover:bg-white/[0.08]"
+              >
+                <div
+                  className="grid h-10 w-10 place-items-center rounded-lg text-white shadow-glow"
+                  style={{ background: "linear-gradient(135deg, #059669 0%, #34D399 100%)" }}
+                >
+                  <MessageCircle size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-navy-muted">
+                    WhatsApp
+                  </div>
+                  <EditableText
+                    as="div"
+                    className="mt-0.5 block truncate text-[15px] font-semibold text-white transition-colors group-hover:text-cyan"
+                    value={c.whatsapp}
+                    onChange={(v) => setNestedField("contact.whatsapp", v)}
+                  />
+                </div>
+              </a>
+
+              {/* Email */}
+              <a
+                href={`mailto:${c.email}`}
+                className="group flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3.5 transition hover:-translate-y-0.5 hover:border-cyan/40 hover:bg-white/[0.08]"
+              >
+                <div
+                  className="grid h-10 w-10 place-items-center rounded-lg text-white shadow-glow"
+                  style={{ background: "linear-gradient(135deg, #2563EB 0%, #22D3EE 100%)" }}
+                >
+                  <Mail size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-navy-muted">
+                    Email
+                  </div>
+                  <EditableText
+                    as="div"
+                    className="mt-0.5 block truncate text-[15px] font-semibold text-white transition-colors group-hover:text-cyan"
+                    value={c.email}
+                    onChange={(v) => setNestedField("contact.email", v)}
+                  />
+                </div>
+              </a>
+
+              {/* Location */}
+              <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-3.5">
+                <div
+                  className="grid h-10 w-10 place-items-center rounded-lg text-white shadow-glow"
+                  style={{ background: "linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)" }}
+                >
+                  <MapPin size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-navy-muted">
+                    Location
+                  </div>
+                  <EditableText
+                    as="div"
+                    className="mt-0.5 block text-[15px] font-semibold text-white"
+                    value={c.location}
+                    onChange={(v) => setNestedField("contact.location", v)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Divider + socials */}
+            <div className="relative mt-6 border-t border-white/10 pt-5">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-on-navy-muted">
+                সোশ্যাল
+              </div>
+              <div className="mt-3 flex items-center gap-2">
                 {[
                   { icon: Facebook, href: c.facebookUrl, label: "Facebook" },
                   { icon: Instagram, href: c.instagramUrl, label: "Instagram" },
@@ -141,194 +322,14 @@ export default function Contact() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={label}
-                    className="grid h-10 w-10 place-items-center rounded-lg border border-border text-muted transition hover:border-primary hover:text-primary"
+                    className="grid h-10 w-10 place-items-center rounded-lg border border-white/15 bg-white/5 text-on-navy backdrop-blur transition hover:border-cyan hover:bg-cyan/10 hover:text-cyan"
                   >
                     <Icon size={16} />
                   </a>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] font-medium uppercase tracking-[0.18em] text-muted/70">
-                [ সোশ্যাল URL অ্যাডমিন বার / JSON export থেকে আপডেট করুন ]
-              </p>
             </div>
           </aside>
-
-          {/* Right — form */}
-          <form
-            noValidate
-            onSubmit={onSubmit}
-            className="reveal rounded-2xl border border-border bg-bg p-6 shadow-card sm:p-8 lg:col-span-8"
-          >
-            {sent ? (
-              <div className="py-16 text-center">
-                <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-primary/10 text-primary">
-                  ✓
-                </div>
-                <h3 className="font-display text-2xl font-semibold text-ink">ধন্যবাদ!</h3>
-                <p className="mt-2 text-muted">
-                  আপনার বার্তা পেয়েছি। ২৪ ঘণ্টার মধ্যে যোগাযোগ করবো।
-                </p>
-                <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted/70">
-                  [ ফ্রন্টএন্ড validation — backend পরে যোগ হবে ]
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setForm(initial);
-                    setSent(false);
-                  }}
-                  className="btn-outline mt-6"
-                >
-                  আরেকটা বার্তা পাঠান
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label className="label" htmlFor="name">
-                      নাম *
-                    </label>
-                    <input
-                      id="name"
-                      className="field"
-                      value={form.name}
-                      onChange={(e) => update("name", e.target.value)}
-                      placeholder="আপনার পুরো নাম"
-                    />
-                    {errors.name && <p className={errClass}>{errors.name}</p>}
-                  </div>
-                  <div>
-                    <label className="label" htmlFor="email">
-                      ইমেইল *
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      className="field"
-                      value={form.email}
-                      onChange={(e) => update("email", e.target.value)}
-                      placeholder="you@example.com"
-                    />
-                    {errors.email && <p className={errClass}>{errors.email}</p>}
-                  </div>
-                  <div>
-                    <label className="label" htmlFor="phone">
-                      ফোন / WhatsApp
-                    </label>
-                    <input
-                      id="phone"
-                      className="field"
-                      value={form.phone}
-                      onChange={(e) => update("phone", e.target.value)}
-                      placeholder="01XXXXXXXXX"
-                    />
-                  </div>
-                  <div>
-                    <label className="label" htmlFor="company">
-                      কোম্পানি / ব্র্যান্ড
-                    </label>
-                    <input
-                      id="company"
-                      className="field"
-                      value={form.company}
-                      onChange={(e) => update("company", e.target.value)}
-                      placeholder="যদি থাকে"
-                    />
-                  </div>
-                  <div>
-                    <label className="label" htmlFor="service">
-                      সার্ভিস
-                    </label>
-                    <select
-                      id="service"
-                      className="field"
-                      value={form.service}
-                      onChange={(e) => update("service", e.target.value)}
-                    >
-                      <option value="">সার্ভিস নির্বাচন</option>
-                      {SERVICES.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="label" htmlFor="budget">
-                      মাসিক বাজেট
-                    </label>
-                    <select
-                      id="budget"
-                      className="field"
-                      value={form.budget}
-                      onChange={(e) => update("budget", e.target.value)}
-                    >
-                      <option value="">বাজেট নির্বাচন</option>
-                      {BUDGETS.map((b) => (
-                        <option key={b} value={b}>
-                          {b}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="label" htmlFor="timeline">
-                      টাইমলাইন
-                    </label>
-                    <select
-                      id="timeline"
-                      className="field"
-                      value={form.timeline}
-                      onChange={(e) => update("timeline", e.target.value)}
-                    >
-                      <option value="">কখন শুরু করতে চান</option>
-                      {TIMELINES.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="label" htmlFor="message">
-                      প্রজেক্ট বিবরণ *
-                    </label>
-                    <textarea
-                      id="message"
-                      className="field min-h-[140px] resize-y"
-                      value={form.message}
-                      onChange={(e) => update("message", e.target.value)}
-                      placeholder="আপনার ব্র্যান্ড, লক্ষ্য ও চ্যালেঞ্জ সংক্ষেপে লিখুন..."
-                    />
-                    {errors.message && <p className={errClass}>{errors.message}</p>}
-                  </div>
-                </div>
-
-                <div className="mt-8 flex flex-wrap items-center gap-3">
-                  <button type="submit" className="btn-primary">
-                    বার্তা পাঠান
-                  </button>
-                  <a
-                    href={`https://wa.me/88${waNumber}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-wa"
-                  >
-                    <MessageCircle size={16} />
-                    WhatsApp
-                  </a>
-                  <a href={`mailto:${c.email}`} className="btn-outline">
-                    <Mail size={16} />
-                    Email
-                  </a>
-                </div>
-                <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.18em] text-muted/70">
-                  [ এই ফর্ম এখন শুধু frontend validation করে — backend পরে যোগ হবে ]
-                </p>
-              </>
-            )}
-          </form>
         </div>
       </div>
     </section>
