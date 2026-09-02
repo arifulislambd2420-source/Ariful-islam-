@@ -1,6 +1,8 @@
 import { useState, FormEvent } from "react";
 import { Facebook, Instagram, Linkedin, Mail, MessageCircle, Youtube } from "lucide-react";
 import SectionHeader from "./SectionHeader";
+import { useSite } from "../context/SiteContext";
+import { EditableText } from "./admin/EditableText";
 
 type FormState = {
   name: string;
@@ -46,7 +48,12 @@ const BUDGETS = [
 
 const TIMELINES = ["এখনই শুরু", "১-২ সপ্তাহের মধ্যে", "১ মাসের মধ্যে", "শুধু আলাপ / পরামর্শ"];
 
+const errClass = "mt-1 text-xs text-red-500";
+
 export default function Contact() {
+  const { data, setNestedField } = useSite();
+  const c = data.contact;
+  const waNumber = (c.whatsapp || "").replace(/\D/g, "");
   const [form, setForm] = useState<FormState>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [sent, setSent] = useState(false);
@@ -74,66 +81,74 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="border-t border-hairline bg-panel/30 py-24 sm:py-32">
+    <section id="contact" className="border-t border-border bg-surface py-24 sm:py-32">
       <div className="container-x">
         <SectionHeader
           entry="এন্ট্রি ০৬ · যোগাযোগ"
           title="চলুন কাজ শুরু করি।"
-          intro="একটা সংক্ষিপ্ত ব্রিফ দিন — ২৪ ঘণ্টার মধ্যে ফিরে আসছি WhatsApp বা ইমেইলে।"
+          intro={c.formIntro}
         />
 
         <div className="grid gap-10 lg:grid-cols-12">
           {/* Left — quick contact */}
           <aside className="reveal space-y-6 lg:col-span-4">
             <a
-              href="https://wa.me/8801874783819"
+              href={`https://wa.me/88${waNumber}`}
               target="_blank"
               rel="noreferrer"
-              className="group flex items-start gap-4 rounded-lg border border-hairline bg-panel/60 p-5 transition-colors hover:border-accent/40"
+              className="group flex items-start gap-4 rounded-2xl border border-border bg-bg p-5 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover"
             >
-              <MessageCircle size={22} className="mt-0.5 text-accent" />
+              <MessageCircle size={22} className="mt-0.5 text-primary" />
               <div>
                 <div className="eyebrow">WhatsApp</div>
-                <div className="mt-1 font-display text-lg font-semibold group-hover:text-accent">
-                  01874783819
-                </div>
+                <EditableText
+                  as="div"
+                  className="mt-1 font-display text-lg font-semibold text-ink group-hover:text-primary"
+                  value={c.whatsapp}
+                  onChange={(v) => setNestedField("contact.whatsapp", v)}
+                />
               </div>
             </a>
 
             <a
-              href="mailto:ariful68173@gmail.com"
-              className="group flex items-start gap-4 rounded-lg border border-hairline bg-panel/60 p-5 transition-colors hover:border-accent/40"
+              href={`mailto:${c.email}`}
+              className="group flex items-start gap-4 rounded-2xl border border-border bg-bg p-5 shadow-card transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover"
             >
-              <Mail size={22} className="mt-0.5 text-accent" />
+              <Mail size={22} className="mt-0.5 text-primary" />
               <div>
                 <div className="eyebrow">Email</div>
-                <div className="mt-1 font-display text-lg font-semibold group-hover:text-accent">
-                  ariful68173@gmail.com
-                </div>
+                <EditableText
+                  as="div"
+                  className="mt-1 font-display text-lg font-semibold text-ink group-hover:text-primary"
+                  value={c.email}
+                  onChange={(v) => setNestedField("contact.email", v)}
+                />
               </div>
             </a>
 
-            <div className="rounded-lg border border-hairline bg-panel/60 p-5">
+            <div className="rounded-2xl border border-border bg-bg p-5 shadow-card">
               <div className="eyebrow">সোশ্যাল</div>
               <div className="mt-4 flex items-center gap-3">
                 {[
-                  { icon: Facebook, href: "#", label: "Facebook" },
-                  { icon: Instagram, href: "#", label: "Instagram" },
-                  { icon: Linkedin, href: "#", label: "LinkedIn" },
-                  { icon: Youtube, href: "#", label: "YouTube" },
+                  { icon: Facebook, href: c.facebookUrl, label: "Facebook" },
+                  { icon: Instagram, href: c.instagramUrl, label: "Instagram" },
+                  { icon: Linkedin, href: c.linkedinUrl, label: "LinkedIn" },
+                  { icon: Youtube, href: c.youtubeUrl, label: "YouTube" },
                 ].map(({ icon: Icon, href, label }) => (
                   <a
                     key={label}
-                    href={href}
+                    href={href || "#"}
+                    target="_blank"
+                    rel="noreferrer"
                     aria-label={label}
-                    className="grid h-10 w-10 place-items-center rounded-md border border-hairline text-muted transition hover:border-accent hover:text-accent"
+                    className="grid h-10 w-10 place-items-center rounded-lg border border-border text-muted transition hover:border-primary hover:text-primary"
                   >
                     <Icon size={16} />
                   </a>
                 ))}
               </div>
-              <p className="mt-3 font-mono text-[10px] uppercase tracking-widest2 text-muted/70">
-                [ সোশ্যাল লিংক পরে যোগ হবে ]
+              <p className="mt-3 text-[10px] font-medium uppercase tracking-[0.18em] text-muted/70">
+                [ সোশ্যাল URL অ্যাডমিন বার / JSON export থেকে আপডেট করুন ]
               </p>
             </div>
           </aside>
@@ -142,18 +157,18 @@ export default function Contact() {
           <form
             noValidate
             onSubmit={onSubmit}
-            className="reveal rounded-lg border border-hairline bg-panel/40 p-6 sm:p-8 lg:col-span-8"
+            className="reveal rounded-2xl border border-border bg-bg p-6 shadow-card sm:p-8 lg:col-span-8"
           >
             {sent ? (
               <div className="py-16 text-center">
-                <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-accent/15 text-accent">
+                <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-primary/10 text-primary">
                   ✓
                 </div>
-                <h3 className="font-display text-2xl font-semibold">ধন্যবাদ!</h3>
+                <h3 className="font-display text-2xl font-semibold text-ink">ধন্যবাদ!</h3>
                 <p className="mt-2 text-muted">
                   আপনার বার্তা পেয়েছি। ২৪ ঘণ্টার মধ্যে যোগাযোগ করবো।
                 </p>
-                <p className="mt-2 font-mono text-[11px] uppercase tracking-widest2 text-muted/70">
+                <p className="mt-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted/70">
                   [ ফ্রন্টএন্ড validation — backend পরে যোগ হবে ]
                 </p>
                 <button
@@ -162,7 +177,7 @@ export default function Contact() {
                     setForm(initial);
                     setSent(false);
                   }}
-                  className="mt-6 btn-ghost"
+                  className="btn-outline mt-6"
                 >
                   আরেকটা বার্তা পাঠান
                 </button>
@@ -171,7 +186,7 @@ export default function Contact() {
               <>
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label className="label-mono" htmlFor="name">
+                    <label className="label" htmlFor="name">
                       নাম *
                     </label>
                     <input
@@ -181,12 +196,10 @@ export default function Contact() {
                       onChange={(e) => update("name", e.target.value)}
                       placeholder="আপনার পুরো নাম"
                     />
-                    {errors.name && (
-                      <p className="mt-1 text-xs text-gold">{errors.name}</p>
-                    )}
+                    {errors.name && <p className={errClass}>{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="label-mono" htmlFor="email">
+                    <label className="label" htmlFor="email">
                       ইমেইল *
                     </label>
                     <input
@@ -197,12 +210,10 @@ export default function Contact() {
                       onChange={(e) => update("email", e.target.value)}
                       placeholder="you@example.com"
                     />
-                    {errors.email && (
-                      <p className="mt-1 text-xs text-gold">{errors.email}</p>
-                    )}
+                    {errors.email && <p className={errClass}>{errors.email}</p>}
                   </div>
                   <div>
-                    <label className="label-mono" htmlFor="phone">
+                    <label className="label" htmlFor="phone">
                       ফোন / WhatsApp
                     </label>
                     <input
@@ -214,7 +225,7 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="label-mono" htmlFor="company">
+                    <label className="label" htmlFor="company">
                       কোম্পানি / ব্র্যান্ড
                     </label>
                     <input
@@ -226,7 +237,7 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="label-mono" htmlFor="service">
+                    <label className="label" htmlFor="service">
                       সার্ভিস
                     </label>
                     <select
@@ -244,7 +255,7 @@ export default function Contact() {
                     </select>
                   </div>
                   <div>
-                    <label className="label-mono" htmlFor="budget">
+                    <label className="label" htmlFor="budget">
                       মাসিক বাজেট
                     </label>
                     <select
@@ -262,7 +273,7 @@ export default function Contact() {
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="label-mono" htmlFor="timeline">
+                    <label className="label" htmlFor="timeline">
                       টাইমলাইন
                     </label>
                     <select
@@ -280,7 +291,7 @@ export default function Contact() {
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="label-mono" htmlFor="message">
+                    <label className="label" htmlFor="message">
                       প্রজেক্ট বিবরণ *
                     </label>
                     <textarea
@@ -290,9 +301,7 @@ export default function Contact() {
                       onChange={(e) => update("message", e.target.value)}
                       placeholder="আপনার ব্র্যান্ড, লক্ষ্য ও চ্যালেঞ্জ সংক্ষেপে লিখুন..."
                     />
-                    {errors.message && (
-                      <p className="mt-1 text-xs text-gold">{errors.message}</p>
-                    )}
+                    {errors.message && <p className={errClass}>{errors.message}</p>}
                   </div>
                 </div>
 
@@ -301,7 +310,7 @@ export default function Contact() {
                     বার্তা পাঠান
                   </button>
                   <a
-                    href="https://wa.me/8801874783819"
+                    href={`https://wa.me/88${waNumber}`}
                     target="_blank"
                     rel="noreferrer"
                     className="btn-wa"
@@ -309,12 +318,12 @@ export default function Contact() {
                     <MessageCircle size={16} />
                     WhatsApp
                   </a>
-                  <a href="mailto:ariful68173@gmail.com" className="btn-ghost">
+                  <a href={`mailto:${c.email}`} className="btn-outline">
                     <Mail size={16} />
                     Email
                   </a>
                 </div>
-                <p className="mt-4 font-mono text-[11px] uppercase tracking-widest2 text-muted/70">
+                <p className="mt-4 text-[11px] font-medium uppercase tracking-[0.18em] text-muted/70">
                   [ এই ফর্ম এখন শুধু frontend validation করে — backend পরে যোগ হবে ]
                 </p>
               </>

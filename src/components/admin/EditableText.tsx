@@ -53,13 +53,13 @@ export const EditableText: React.FC<EditableTextProps> = ({
 
   if (isEditing) {
     return (
-      <div className="relative inline-block w-full max-w-full my-1 z-30">
+      <div className="relative z-30 my-1 inline-block w-full max-w-full">
         {multiline ? (
           <textarea
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="w-full rounded-md border-2 border-accent bg-surface p-3 font-inherit text-ink shadow-2xl focus:outline-none ring-2 ring-accent/30 min-h-[100px]"
+            className="min-h-[100px] w-full rounded-md border-2 border-primary bg-bg p-3 text-ink shadow-2xl ring-2 ring-primary/30 focus:outline-none"
             rows={3}
             placeholder={placeholder}
           />
@@ -69,7 +69,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="w-full rounded-md border-2 border-accent bg-surface px-3 py-1.5 font-inherit text-ink shadow-2xl focus:outline-none ring-2 ring-accent/30"
+            className="w-full rounded-md border-2 border-primary bg-bg px-3 py-1.5 text-ink shadow-2xl ring-2 ring-primary/30 focus:outline-none"
             placeholder={placeholder}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSave();
@@ -81,14 +81,14 @@ export const EditableText: React.FC<EditableTextProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="inline-flex items-center gap-1 rounded bg-accent px-2.5 py-1 text-xs font-semibold text-bg shadow hover:brightness-110"
+            className="inline-flex items-center gap-1 rounded bg-primary px-2.5 py-1 text-xs font-semibold text-white shadow hover:brightness-110"
           >
             <Check size={13} /> সেভ
           </button>
           <button
             type="button"
             onClick={handleCancel}
-            className="inline-flex items-center gap-1 rounded bg-panel px-2.5 py-1 text-xs text-muted hover:text-ink"
+            className="inline-flex items-center gap-1 rounded bg-surface px-2.5 py-1 text-xs text-muted hover:text-ink"
           >
             <X size={13} /> বাতিল
           </button>
@@ -107,8 +107,8 @@ export const EditableText: React.FC<EditableTextProps> = ({
       title="ক্লিক করে এডিট করুন"
       className={`${className} editable-active group`}
     >
-      {value || <span className="opacity-50 italic">{placeholder}</span>}
-      <span className="ml-1.5 inline-flex align-middle opacity-60 group-hover:opacity-100 group-hover:scale-110 transition text-accent">
+      {value || <span className="italic opacity-50">{placeholder}</span>}
+      <span className="ml-1.5 inline-flex align-middle text-primary opacity-60 transition group-hover:scale-110 group-hover:opacity-100">
         <Edit2 size={12} className="inline" />
       </span>
     </Component>

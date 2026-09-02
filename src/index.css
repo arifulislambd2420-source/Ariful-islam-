@@ -118,3 +118,26 @@
   background-clip: text;
   color: transparent;
 }
+
+/* Admin edit-mode affordances */
+.editable-active {
+  cursor: pointer;
+  outline: 1px dashed rgba(37, 99, 235, 0.35);
+  outline-offset: 3px;
+  border-radius: 3px;
+  transition: outline-color 150ms ease, background-color 150ms ease;
+}
+.editable-active:hover {
+  outline-color: #2563eb;
+  background-color: rgba(37, 99, 235, 0.06);
+}
+.editable-img-active > img,
+.editable-img-active > div:first-child {
+  outline: 2px dashed rgba(37, 99, 235, 0.35);
+  outline-offset: 2px;
+  transition: outline-color 150ms ease;
+}
+.editable-img-active:hover > img,
+.editable-img-active:hover > div:first-child {
+  outline-color: #2563eb;
+}

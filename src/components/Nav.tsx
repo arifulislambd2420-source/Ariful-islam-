@@ -24,15 +24,15 @@ export default function Nav() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors ${
-        scrolled ? "bg-bg/85 backdrop-blur border-b border-hairline" : "bg-transparent"
+        scrolled ? "bg-bg/85 backdrop-blur border-b border-border" : "bg-transparent"
       }`}
     >
       <nav className="container-x flex h-16 items-center justify-between">
-        <a href="#home" className="flex items-center gap-2 font-display text-lg font-bold">
-          <span className="grid h-8 w-8 place-items-center rounded-md border border-hairline text-accent">
+        <a href="#home" className="flex items-center gap-2 font-display text-lg font-bold text-ink">
+          <span className="grid h-8 w-8 place-items-center rounded-md bg-cta-gradient text-white shadow-glow">
             A
           </span>
-          <span className="hidden sm:inline">Ariful<span className="text-accent">.</span></span>
+          <span className="hidden sm:inline">Ariful<span className="text-primary">.</span></span>
         </a>
 
         <ul className="hidden items-center gap-8 md:flex">
@@ -40,7 +40,7 @@ export default function Nav() {
             <li key={l.href}>
               <a
                 href={l.href}
-                className="font-mono text-[12px] uppercase tracking-widest2 text-muted hover:text-text"
+                className="text-sm font-medium text-muted transition-colors hover:text-primary"
               >
                 {l.label}
               </a>
@@ -68,14 +68,14 @@ export default function Nav() {
       </nav>
 
       {open && (
-        <div className="border-t border-hairline bg-bg md:hidden">
+        <div className="border-t border-border bg-bg md:hidden">
           <ul className="container-x flex flex-col py-4">
             {LINKS.map((l) => (
               <li key={l.href}>
                 <a
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  className="block py-3 font-mono text-[13px] uppercase tracking-widest2 text-muted"
+                  className="block py-3 text-[15px] font-medium text-muted hover:text-primary"
                 >
                   {l.label}
                 </a>

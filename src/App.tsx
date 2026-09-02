@@ -9,9 +9,12 @@ import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import WhatsAppFab from "./components/WhatsAppFab";
+import { AdminBar } from "./components/admin/AdminBar";
+import { AdminLoginModal } from "./components/admin/AdminLoginModal";
+import { SiteProvider } from "./context/SiteContext";
 import { useReveal } from "./lib/useReveal";
 
-export default function App() {
+function AppContent() {
   useReveal();
   return (
     <>
@@ -28,6 +31,16 @@ export default function App() {
       </main>
       <Footer />
       <WhatsAppFab />
+      <AdminBar />
+      <AdminLoginModal />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <SiteProvider>
+      <AppContent />
+    </SiteProvider>
   );
 }

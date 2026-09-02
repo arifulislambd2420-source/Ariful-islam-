@@ -28,7 +28,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert("ছবির সাইজ ২MB এর কম হওয়া প্রয়োজন!");
+        alert("ছবির সাইজ ২MB এর কম হওয়া প্রয়োজন!");
         return;
       }
       const reader = new FileReader();
@@ -55,7 +55,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
       {src ? (
         <img src={src} alt={alt} className={className} />
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-panel text-muted">
+        <div className="flex h-full w-full items-center justify-center bg-surface text-muted">
           {fallbackIcon || <ImageIcon size={48} className="opacity-40" />}
         </div>
       )}
@@ -66,12 +66,12 @@ export const EditableImage: React.FC<EditableImageProps> = ({
             e.stopPropagation();
             setIsOpen(true);
           }}
-          className="absolute inset-0 flex flex-col items-center justify-center bg-bg/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition duration-200 cursor-pointer p-4 text-center z-20"
+          className="absolute inset-0 z-20 flex cursor-pointer flex-col items-center justify-center bg-navy/80 p-4 text-center opacity-0 backdrop-blur-sm transition duration-200 group-hover:opacity-100"
         >
-          <div className="grid h-12 w-12 place-items-center rounded-full bg-accent text-bg shadow-lg mb-2">
+          <div className="mb-2 grid h-12 w-12 place-items-center rounded-full bg-cta-gradient text-white shadow-glow">
             <Camera size={22} />
           </div>
-          <span className="font-mono text-xs font-semibold text-ink bg-panel/90 px-3 py-1 rounded-full border border-border">
+          <span className="rounded-full border border-white/20 bg-navy/90 px-3 py-1 text-xs font-semibold text-white">
             ছবি পরিবর্তন করুন
           </span>
         </div>
@@ -79,19 +79,19 @@ export const EditableImage: React.FC<EditableImageProps> = ({
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(false);
           }}
         >
           <div
-            className="w-full max-w-md rounded-xl border border-border bg-panel p-6 shadow-2xl"
+            className="w-full max-w-md rounded-2xl border border-border bg-bg p-6 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-display text-lg font-semibold text-ink flex items-center gap-2">
-                <Camera size={18} className="text-accent" /> নতুন ছবি যোগ করুন
+              <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+                <Camera size={18} className="text-primary" /> নতুন ছবি যোগ করুন
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
@@ -104,7 +104,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
             <div className="mt-5 space-y-4">
               {/* Option 1: File Upload */}
               <div>
-                <label className="label-mono">১. কম্পিউটার/ফোন থেকে ছবি আপলোড করুন</label>
+                <label className="label">১. কম্পিউটার/ফোন থেকে ছবি আপলোড করুন</label>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -115,32 +115,32 @@ export const EditableImage: React.FC<EditableImageProps> = ({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border py-4 text-sm font-medium text-muted hover:border-accent hover:text-accent transition"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border py-4 text-sm font-medium text-muted transition hover:border-primary hover:text-primary"
                 >
                   <Upload size={18} /> ছবি নির্বাচন করুন (সর্বোচ্চ ২MB)
                 </button>
               </div>
 
               <div className="relative flex items-center justify-center">
-                <div className="border-t border-border w-full" />
-                <span className="bg-panel px-3 font-mono text-xs uppercase tracking-wider text-muted">
+                <div className="w-full border-t border-border" />
+                <span className="bg-bg px-3 text-xs uppercase tracking-wider text-muted">
                   অথবা
                 </span>
-                <div className="border-t border-border w-full" />
+                <div className="w-full border-t border-border" />
               </div>
 
               {/* Option 2: Image URL */}
               <form onSubmit={handleUrlSubmit}>
-                <label className="label-mono">২. ছবির সরাসরি লিঙ্ক (Image URL) দিন</label>
+                <label className="label">২. ছবির সরাসরি লিঙ্ক (Image URL) দিন</label>
                 <div className="flex gap-2">
                   <input
                     type="url"
                     value={urlInput}
                     onChange={(e) => setUrlInput(e.target.value)}
                     placeholder="https://example.com/photo.jpg"
-                    className="field flex-1 text-sm py-2"
+                    className="field flex-1 py-2 text-sm"
                   />
-                  <button type="submit" className="btn-primary py-2 px-4 text-xs">
+                  <button type="submit" className="btn-primary px-4 py-2 text-xs">
                     <Check size={14} /> যোগ করুন
                   </button>
                 </div>

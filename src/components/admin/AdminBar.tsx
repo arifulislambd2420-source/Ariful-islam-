@@ -37,11 +37,11 @@ export const AdminBar: React.FC = () => {
   if (!isAdmin) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-3xl animate-bounce-short">
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-accent/40 bg-surface/95 px-4 py-2.5 shadow-2xl backdrop-blur-md">
+    <div className="fixed bottom-4 left-1/2 z-50 w-[95%] max-w-3xl -translate-x-1/2">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-primary/40 bg-bg/95 px-4 py-2.5 shadow-2xl backdrop-blur-md">
         {/* Left: Admin Status & Mode Toggle */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-accent">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
             <Sparkles size={15} />
             <span className="hidden sm:inline">Admin Mode</span>
           </div>
@@ -51,8 +51,8 @@ export const AdminBar: React.FC = () => {
             onClick={toggleEditMode}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition ${
               isEditMode
-                ? "bg-accent text-bg shadow-glow"
-                : "bg-panel text-muted hover:text-ink"
+                ? "bg-cta-gradient text-white shadow-glow"
+                : "bg-surface text-muted hover:text-ink"
             }`}
           >
             {isEditMode ? (
@@ -70,7 +70,7 @@ export const AdminBar: React.FC = () => {
         </div>
 
         {/* Center: Live Saved Indicator */}
-        <div className="hidden md:flex items-center gap-1.5 text-xs text-emerald font-mono">
+        <div className="hidden items-center gap-1.5 text-xs text-green-500 md:flex">
           <CheckCircle2 size={13} />
           <span>অটো-সেভড</span>
         </div>
@@ -82,16 +82,16 @@ export const AdminBar: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPalette((v) => !v)}
-              className="flex items-center gap-1 rounded-lg border border-border bg-panel px-2.5 py-1 text-xs text-ink hover:border-accent hover:text-accent transition"
+              className="flex items-center gap-1 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs text-ink transition hover:border-primary hover:text-primary"
               title="রং পরিবর্তন করুন"
             >
-              <Palette size={14} className="text-accent" />
+              <Palette size={14} className="text-primary" />
               <span className="hidden sm:inline">থিম কালার</span>
             </button>
 
             {showPalette && (
-              <div className="absolute bottom-full right-0 mb-3 w-64 rounded-xl border border-border bg-panel p-4 shadow-2xl backdrop-blur-lg">
-                <div className="text-xs font-semibold font-mono text-ink mb-2">
+              <div className="absolute bottom-full right-0 mb-3 w-64 rounded-xl border border-border bg-bg p-4 shadow-2xl backdrop-blur-lg">
+                <div className="mb-2 text-xs font-semibold text-ink">
                   কালার প্যালেট নির্বাচন করুন
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -103,7 +103,7 @@ export const AdminBar: React.FC = () => {
                         setThemeColor("primary", preset.primary);
                         setThemeColor("accent", preset.accent);
                       }}
-                      className="flex items-center gap-2 rounded-lg border border-border bg-surface p-2 text-left text-[11px] font-medium text-ink hover:border-accent transition"
+                      className="flex items-center gap-2 rounded-lg border border-border bg-surface p-2 text-left text-[11px] font-medium text-ink transition hover:border-primary"
                     >
                       <span
                         className="h-3.5 w-3.5 rounded-full shadow"
@@ -114,8 +114,8 @@ export const AdminBar: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-border">
-                  <label className="text-[11px] font-mono text-muted mb-1 block">
+                <div className="mt-3 border-t border-border pt-3">
+                  <label className="mb-1 block text-[11px] text-muted">
                     কাস্টম কালার কোড (Hex):
                   </label>
                   <div className="flex gap-2">
@@ -134,7 +134,7 @@ export const AdminBar: React.FC = () => {
                       onChange={(e) => {
                         setThemeColor("accent", e.target.value);
                       }}
-                      className="field text-xs py-1 px-2"
+                      className="field px-2 py-1 text-xs"
                       placeholder="#2563EB"
                     />
                   </div>
@@ -147,7 +147,7 @@ export const AdminBar: React.FC = () => {
           <button
             type="button"
             onClick={exportJSON}
-            className="flex items-center gap-1 rounded-lg border border-border bg-panel px-2.5 py-1 text-xs text-muted hover:text-ink hover:border-border transition"
+            className="flex items-center gap-1 rounded-lg border border-border bg-surface px-2.5 py-1 text-xs text-muted transition hover:text-ink"
             title="ডাটা ব্যাকআপ ডাউনলোড করুন"
           >
             <Download size={13} />
@@ -158,7 +158,7 @@ export const AdminBar: React.FC = () => {
           <button
             type="button"
             onClick={resetDefaults}
-            className="flex items-center gap-1 rounded-lg border border-border bg-panel px-2 py-1 text-xs text-muted hover:text-red-400 hover:border-red-400/40 transition"
+            className="flex items-center gap-1 rounded-lg border border-border bg-surface px-2 py-1 text-xs text-muted transition hover:border-red-500/40 hover:text-red-500"
             title="ডিফল্ট রিসেট"
           >
             <RotateCcw size={13} />
@@ -168,7 +168,7 @@ export const AdminBar: React.FC = () => {
           <button
             type="button"
             onClick={logout}
-            className="flex items-center gap-1 rounded-lg bg-red-500/15 border border-red-500/30 px-2.5 py-1 text-xs font-medium text-red-400 hover:bg-red-500/25 transition"
+            className="flex items-center gap-1 rounded-lg border border-red-500/30 bg-red-500/15 px-2.5 py-1 text-xs font-medium text-red-500 transition hover:bg-red-500/25"
             title="অ্যাডমিন থেকে লগআউট করুন"
           >
             <LogOut size={13} />

@@ -6,7 +6,7 @@ type Props = {
 
 export default function SectionHeader({ entry, title, intro }: Props) {
   return (
-    <div className="reveal mb-12 grid gap-6 border-b border-hairline pb-8 md:grid-cols-12 md:items-end">
+    <div className="reveal mb-12 grid gap-6 border-b border-border pb-8 md:grid-cols-12 md:items-end">
       <div className="md:col-span-4">
         <p className="eyebrow">{entry}</p>
       </div>

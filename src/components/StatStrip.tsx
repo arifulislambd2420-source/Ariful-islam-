@@ -1,36 +1,76 @@
 import { useCountUp } from "../lib/useCountUp";
+import { useSite } from "../context/SiteContext";
+import { EditableText } from "./admin/EditableText";
 
-function Stat({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+function Stat({
+  value,
+  suffix,
+  label,
+  onLabelChange,
+}: {
+  value: number;
+  suffix: string;
+  label: string;
+  onLabelChange: (v: string) => void;
+}) {
   const { value: v, nodeRef } = useCountUp(value);
   return (
     <div className="flex flex-col items-start gap-2 py-8">
       <div
         ref={nodeRef as React.RefObject<HTMLDivElement>}
-        className="font-display text-4xl font-bold text-text sm:text-5xl"
+        className="font-display text-4xl font-bold text-ink sm:text-5xl"
       >
         {v}
-        <span className="text-accent">{suffix}</span>
+        <span className="text-primary">{suffix}</span>
       </div>
-      <div className="eyebrow">{label}</div>
+      <EditableText
+        as="div"
+        className="eyebrow"
+        value={label}
+        onChange={onLabelChange}
+      />
     </div>
   );
 }
 
 export default function StatStrip() {
+  const { data, setNestedField } = useSite();
+  const s = data.stats;
+
   return (
-    <section className="border-y border-hairline bg-panel/40">
-      <div className="container-x grid grid-cols-2 gap-x-8 md:grid-cols-4 md:divide-x md:divide-hairline">
+    <section className="border-y border-border bg-surface">
+      <div className="container-x grid grid-cols-2 gap-x-8 md:grid-cols-4 md:divide-x md:divide-border">
         <div className="md:pr-8">
-          <Stat value={4} suffix="+" label="বছর অভিজ্ঞতা" />
+          <Stat
+            value={s.stat1.value}
+            suffix={s.stat1.suffix}
+            label={s.stat1.label}
+            onLabelChange={(v) => setNestedField("stats.stat1.label", v)}
+          />
         </div>
         <div className="md:px-8">
-          <Stat value={8} suffix="+" label="প্রতিষ্ঠান / ক্লায়েন্ট" />
+          <Stat
+            value={s.stat2.value}
+            suffix={s.stat2.suffix}
+            label={s.stat2.label}
+            onLabelChange={(v) => setNestedField("stats.stat2.label", v)}
+          />
         </div>
         <div className="md:px-8">
-          <Stat value={6} suffix="+" label="সার্ভিস" />
+          <Stat
+            value={s.stat3.value}
+            suffix={s.stat3.suffix}
+            label={s.stat3.label}
+            onLabelChange={(v) => setNestedField("stats.stat3.label", v)}
+          />
         </div>
         <div className="md:pl-8">
-          <Stat value={100} suffix="%" label="ফলাফল-ভিত্তিক" />
+          <Stat
+            value={s.stat4.value}
+            suffix={s.stat4.suffix}
+            label={s.stat4.label}
+            onLabelChange={(v) => setNestedField("stats.stat4.label", v)}
+          />
         </div>
       </div>
     </section>
